@@ -1,26 +1,49 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { Routes } from '@angular/router'
+import { RouterModule } from '@angular/router'
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { BlogComponent } from './blog/blog.component';
-import { PostListComponent } from './post-list/post-list.component';
-import { PostListItemComponentComponent } from './post-list-item-component/post-list-item-component.component';
-import { HomeComponentComponent } from './home-component/home-component.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { FourOhFourComponent } from './components/four-oh-four/four-oh-four.component';
+import { AuthComponent } from './components/auth/auth.component';
+import {AuthGuard} from './services/guard/guard';
+
+const appRoutes: Routes = [
+    {
+        path: 'devices',
+        canActivate: [AuthGuard],
+        loadChildren: () => import('./modules/device/device.module').then(m => m.DeviceModule)
+    },
+    {
+        path: 'blog',
+        canActivate: [AuthGuard],
+        loadChildren: () => import('./modules/blog/blog.module').then(m => m.BlogModule)
+    },
+    {
+        path: 'not-found',
+        component: FourOhFourComponent
+    },
+    {
+        path: '',
+        loadChildren: () => import('./modules/home/home.module').then(m => m.HomeModule)
+    },
+    {
+        path: '**',
+        redirectTo: 'not-found'
+    },
+]
 
 @NgModule({
   declarations: [
     AppComponent,
-    BlogComponent,
-    PostListComponent,
-    PostListItemComponentComponent,
-    HomeComponentComponent
+    NavbarComponent,
+    FourOhFourComponent,
+    AuthComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
-    NgbModule
+    RouterModule.forRoot(appRoutes)
   ],
   providers: [],
   bootstrap: [AppComponent]
